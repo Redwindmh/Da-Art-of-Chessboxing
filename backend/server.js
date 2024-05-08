@@ -9,6 +9,8 @@ const server = http.createServer(app)
 const port = process.env.PORT || 8090
 const io = new Server(server, { cors: '*' })
 
+const rooms = new Map()
+
 server.listen(port, () => {
   console.log(`listening on *:${port}`)
 })
@@ -19,5 +21,16 @@ io.on('connection', (socket) => {
     console.log('username', username)
     socket.data.username = username
   })
-})
 
+  socket.on('createRoom', async (callback) => {
+    const roomId = uuidV4
+    await socket.join(roomId)
+
+    rooms.set(roomId, {
+      roomId,
+      players: [{ id: socket.id, username: socket.data?.username }]
+    })
+
+    callback(roomId)
+  })
+})
