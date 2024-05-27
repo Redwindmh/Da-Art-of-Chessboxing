@@ -33,4 +33,40 @@ io.on('connection', (socket) => {
 
     callback(roomId)
   })
+
+  socket.on('joinRoom', async (args, callback) => {
+    const room = rooms.get(args.roomId)
+    let error, message;
+
+    if (!room) {
+      error = true
+      message = "Chamber does not exist"
+    } else if (room.length <= 0) {
+      error = true
+      message = "Ain't nobody here, b"
+    } else if (room.length >= 2) {
+      error = true
+      message = "This chamber is occupied"
+    }
+
+    if (error) {
+      if (callback) {
+        callback({
+          error,
+          message
+        })
+      }
+      return
+    }
+    await socket.join(args.roomId)
+    const roomUpdate = {
+      ...room,
+      players: [
+        ...room.players,
+        { id: socket.id, username: socket.data?.username }
+      ]
+    }
+    rooms.set(args.roomId, roomUpdate)
+    callback(roomUpdate)
+  })
 })

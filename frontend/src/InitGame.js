@@ -11,7 +11,15 @@ function InitGame({ setRoom, setOrientation, setPlayers }) {
   return (
     <Stack justifyContent="center" alignItems="center" sx={{ py: 1, height: "100vh" }}>
       <CustomDialog open={roomDialogOpen} handleClose={() => setRoomDialogOpen(false)} title="Choose your chamber" contentText="Enter the cipher" handleContinue={() => {
-        console.log("testing")
+        if (!roomInput) return
+        socket.emit("joinRoom", { roomId: roomInput }, (r) => {
+          if (r.error) return setRoomError(r.message)
+          console.log("response: ", r)
+          setRoom(r?.roomId)
+          setPlayers(r?.players)
+          setOrientation("black")
+          setRoomDialogOpen(false)
+        })
       }} >
         <TextField autoFocus margin="dense" id="room" label="Chamber" name="room" value={roomInput} required onChange={(e) => setRoomInput(e.target.value)} type="text" fullWidth variant="standard" error={Boolean(roomError)} helperText={!roomError ? 'Enter your chamber' : `You seek a false chamber: ${roomError}`} />
       </CustomDialog>
