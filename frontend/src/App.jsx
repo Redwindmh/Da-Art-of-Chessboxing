@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Container } from "@mui/material"
 import Game from "./Game"
-import "./App.css"
+import InitGame from "./InitGame"
 import TextField from '@mui/material/TextField'
 import socket from "./socket"
 import CustomDialog from "./components/CustomDialog"
@@ -9,6 +9,23 @@ import CustomDialog from "./components/CustomDialog"
 function App() {
   const [username, setUsername] = useState('')
   const [usernameSubmitted, setUsernameSubmitted] = useState(false)
+
+  const [room, setRoom] = useState("")
+  const [orientation, setOrientation] = useState("")
+  const [players, setPlayers] = useState([])
+
+  const cleanup = useCallback(() => {
+    setRoom("")
+    setOrientation("")
+    setPlayers("")
+  }, [])
+
+  useEffect(() => {
+    socket.on("opponentJoined", (roomData) => {
+      console.log("roomData", roomData)
+      setPlayers(roomData.players)
+    })
+  }, [])
 
   return (
     <Container>
