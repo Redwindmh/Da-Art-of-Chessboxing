@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('createRoom', async (callback) => {
-    const roomId = uuidV4
+    const roomId = uuidV4()
     await socket.join(roomId)
 
     rooms.set(roomId, {

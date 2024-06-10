@@ -21,6 +21,10 @@ function App() {
   }, [])
 
   useEffect(() => {
+    // const username = prompt("Username")
+    // setUsername(username)
+    // socket.emit("username", username)
+
     socket.on("opponentJoined", (roomData) => {
       console.log("roomData", roomData)
       setPlayers(roomData.players)
@@ -36,7 +40,21 @@ function App() {
       }}>
         <TextField autoFocus margin="dense" id="username" label="Username" name="username" value={username} required onChange={(e) => setUsername(e.target.value)} type="text" fullWidth variant="standard" />
       </CustomDialog>
-      <Game />
+      {room ? (
+        <Game
+          room={room}
+          orientation={orientation}
+          username={username}
+          players={players}
+          cleanup={cleanup}
+        />
+      ) : (
+        <InitGame
+          setRoom={setRoom}
+          setOrientation={setOrientation}
+          setPlayers={setPlayers}
+        />
+      )}
     </Container>
   )
 }
